@@ -1,0 +1,35 @@
+repos:
+  - repo: https://github.com/ambv/black
+    rev: stable
+    hooks:
+      - id: black
+        language_version: python3.8
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
+    hooks:
+      - id: flake8
+  #-   repo: https://github.com/pre-commit/mirrors-mypy
+  #    rev: 'v0.782'  # Use the sha / tag you want to point at
+  #    hooks:
+  #    -   id: mypy
+  #        args: [--strict]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.3.0
+    hooks:
+      - id: trailing-whitespace
+      - id: check-case-conflict
+      - id: check-ast
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: tests
+        name: tests
+        language: system
+        entry: coverage run -m unittest
+        pass_filenames: false
+      - id: coverage
+        name: coverage
+        language: system
+        entry: coverage report -m --fail-under=100
+        pass_filenames: false
