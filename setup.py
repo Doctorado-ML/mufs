@@ -20,10 +20,10 @@ def get_data(field: str):
 
 
 setuptools.setup(
-    name="CFS",
+    name="MFS",
     version=get_data("version"),
     license=get_data("license"),
-    description="Correlation-based Feature Selection",
+    description="Multi Feature Selection",
     long_description=readme(),
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),

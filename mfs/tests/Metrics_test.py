@@ -1,7 +1,6 @@
 import unittest
 from sklearn.datasets import load_iris
 from mdlp import MDLP
-import numpy as np
 from ..Selection import Metrics
 
 

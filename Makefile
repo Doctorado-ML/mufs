@@ -4,7 +4,7 @@ SHELL := /bin/bash
 
 coverage:  ## Run tests with coverage
 	coverage erase
-	coverage run -m unittest -v cfs.tests
+	coverage run -m unittest -v mfs.tests
 	coverage report -m
 
 deps:  ## Install dependencies
@@ -19,7 +19,7 @@ push:  ## Push code with tags
 	git push && git push --tags
 
 test:  ## Run tests
-	python -m unittest -v cfs.tests
+	python -m unittest -v mfs.tests
 
 doc:  ## Update documentation
 	make -C docs --makefile=Makefile html
