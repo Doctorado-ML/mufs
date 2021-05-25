@@ -8,7 +8,7 @@ def readme():
 
 def get_data(field: str):
     item = ""
-    with open("stree/__init__.py") as f:
+    with open("mfs/__init__.py") as f:
         for line in f.readlines():
             if line.startswith(f"__{field}__"):
                 delim = '"' if '"' in line else "'"
@@ -27,9 +27,9 @@ setuptools.setup(
     long_description=readme(),
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
-    url="https://github.com/Doctorado-ML/cfs#cfs",
+    url="https://github.com/Doctorado-ML/mfs#mfs",
     project_urls={
-        "Code": "https://github.com/Doctorado-ML/cfs",
+        "Code": "https://github.com/Doctorado-ML/mfs",
     },
     author=get_data("author"),
     author_email=get_data("author_email"),
@@ -43,6 +43,6 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
     ],
     install_requires=["scikit-learn"],
-    test_suite="cfs.tests",
+    test_suite="mfs.tests",
     zip_safe=False,
 )

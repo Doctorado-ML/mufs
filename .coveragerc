@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = cfs
+source = mfs
 
 [report]
 exclude_lines =
@@ -10,4 +10,4 @@ exclude_lines =
     if __name__ == .__main__.:
 ignore_errors = True
 omit =
-    cfs/__init__.py
+    mfs/__init__.py

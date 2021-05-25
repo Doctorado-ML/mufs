@@ -11,9 +11,9 @@ deps:  ## Install dependencies
 	pip install -r requirements.txt
 
 lint:  ## Lint and static-check
-	black cfs
-	flake8 cfs
-	mypy cfs
+	black mfs
+	flake8 mfs
+	mypy mfs
 
 push:  ## Push code with tags
 	git push && git push --tags

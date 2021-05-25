@@ -1,4 +1,4 @@
-from math import log
+from math import log, sqrt
 from sys import float_info
 from itertools import combinations
 import numpy as np
@@ -145,7 +145,7 @@ class MFS:
         k = len(features)
         for pair in list(combinations(features, 2)):
             rff += self._compute_su_features(*pair)
-        return rcf / ((k ** 2 - k) * rff)
+        return rcf / sqrt(k + (k ** 2 - k) * rff)
 
     def cfs(self, X, y):
         """CFS forward best first heuristic search
@@ -161,34 +161,41 @@ class MFS:
         self.X_ = X
         self.y_ = y
         s_list = self._compute_su_labels()
-        # Descending orders
+        # Descending order
         feature_order = (-s_list).argsort().tolist()
-        merit = float_info.min
-        exit_condition = 0
+        continue_condition = True
         candidates = []
         # start with the best feature (max symmetrical uncertainty wrt label)
         first_candidate = feature_order.pop(0)
         candidates.append(first_candidate)
         self._scores.append(s_list[first_candidate])
-        while exit_condition < 5:  # as proposed in the original algorithm
-            id_selected = -1
+        while continue_condition:
+            merit = float_info.min
+            id_selected = None
             for idx, feature in enumerate(feature_order):
                 candidates.append(feature)
                 merit_new = self._compute_merit(candidates)
                 if merit_new > merit:
                     id_selected = idx
                     merit = merit_new
-                    exit_condition = 0
                 candidates.pop()
-            if id_selected == -1:
-                exit_condition += 1
-            else:
-                candidates.append(feature_order[id_selected])
-                self._scores.append(merit_new)
-                del feature_order[id_selected]
+            candidates.append(feature_order[id_selected])
+            self._scores.append(merit)
+            del feature_order[id_selected]
             if len(feature_order) == 0:
                 # Force leaving the loop
-                exit_condition = 5
+                continue_condition = False
+            if len(self._scores) >= 5:
+                item_ant = -1
+                for item in self._scores[-5:]:
+                    if item_ant == -1:
+                        item_ant = item
+                    if item > item_ant:
+                        break
+                    else:
+                        item_ant = item
+                else:
+                    continue_condition = False
         self._result = candidates
         return self
 
@@ -213,7 +220,6 @@ class MFS:
                 break
             # Remove redundant features
             for index_q in feature_dup:
-                # test if feature(index_q) su with feature(index_p) is
                 su_pq = self._compute_su_features(index_p, index_q)
                 if su_pq >= s_list[index_q]:
                     # remove feature from list
