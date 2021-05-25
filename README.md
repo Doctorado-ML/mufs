@@ -1,13 +1,15 @@
+![CI](https://github.com/Doctorado-ML/mfs/workflows/CI/badge.svg)
+
 # MFS
 
 ## Multi Feature Selection
 
-Compute Fast Fast Correlation Based Filter
-Yu, L. and Liu, H.; Feature Selection for High-Dimensional Data: A Fast
-Correlation Based Filter Solution,Proc. 20th Intl. Conf. Mach. Learn.
-(ICML-2003)
+### Fast Correlation-Based Filter
 
-and
+Feature Selection for High-Dimensional Data : A Fast Correlation-Based Filter Solution. / Yu, Lei; Liu, Huan.
 
-Correlated Feature Selection as in "Correlation-based Feature Selection for
-Machine Learning" by Mark Andrew Hall
+Proceedings, Twentieth International Conference on Machine Learning. ed. / T. Fawcett; N. Mishra. 2003. p. 856-863 (Proceedings, Twentieth International Conference on Machine Learning; Vol. 2).
+
+### Correlation-based Feature Selection
+
+Hall, M. A. (1999), 'Correlation-based Feature Selection for Machine Learning'.

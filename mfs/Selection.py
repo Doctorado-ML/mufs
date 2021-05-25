@@ -115,12 +115,23 @@ class MFS:
         self._initialize()
 
     def _initialize(self):
+        """Initialize the attributes so support multiple calls using same
+        object
+        """
         self._result = None
         self._scores = []
         self._su_labels = None
         self._su_features = {}
 
     def _compute_su_labels(self):
+        """Compute symmetrical uncertainty between each feature of the dataset
+        and the labels and store it to use in future calls
+
+        Returns
+        -------
+        list
+            vector with sym. un. of every feature and the labels
+        """
         if self._su_labels is None:
             num_features = self.X_.shape[1]
             self._su_labels = np.zeros(num_features)
@@ -131,6 +142,21 @@ class MFS:
         return self._su_labels
 
     def _compute_su_features(self, feature_a, feature_b):
+        """Compute symmetrical uncertainty between two features and stores it
+        to use in future calls
+
+        Parameters
+        ----------
+        feature_a : int
+            index of the first feature
+        feature_b : int
+            index of the second feature
+
+        Returns
+        -------
+        float
+            The symmetrical uncertainty of the two features
+        """
         if (feature_a, feature_b) not in self._su_features:
             self._su_features[
                 (feature_a, feature_b)
@@ -140,6 +166,18 @@ class MFS:
         return self._su_features[(feature_a, feature_b)]
 
     def _compute_merit(self, features):
+        """Compute the merit function for cfs algorithms
+
+        Parameters
+        ----------
+        features : list
+            list of features to include in the computation
+
+        Returns
+        -------
+        float
+            The merit of the feature set passed
+        """
         rcf = self._su_labels[features].sum()
         rff = 0.0
         k = len(features)
@@ -148,7 +186,8 @@ class MFS:
         return rcf / sqrt(k + (k ** 2 - k) * rff)
 
     def cfs(self, X, y):
-        """CFS forward best first heuristic search
+        """Correlation-based Feature Selection
+        with a forward best first heuristic search
 
         Parameters
         ----------
@@ -156,6 +195,11 @@ class MFS:
             array of features
         y : np.array
             vector of labels
+
+        Returns
+        -------
+        self
+            self
         """
         self._initialize()
         self.X_ = X
@@ -186,6 +230,13 @@ class MFS:
                 # Force leaving the loop
                 continue_condition = False
             if len(self._scores) >= 5:
+                """
+                "To prevent the best first search from exploring the entire
+                feature subset search space, a stopping criterion is imposed.
+                The search will terminate if five consecutive fully expanded
+                subsets show no improvement over the current best subset."
+                as stated in Mark A. Hall Thesis
+                """
                 item_ant = -1
                 for item in self._scores[-5:]:
                     if item_ant == -1:
@@ -200,8 +251,29 @@ class MFS:
         return self
 
     def fcbs(self, X, y, threshold):
+        """Fast Correlation-Based Filter
+
+        Parameters
+        ----------
+        X : np.array
+            array of features
+        y : np.array
+            vector of labels
+        threshold : float
+            threshold to select relevant features
+
+        Returns
+        -------
+        self
+            self
+
+        Raises
+        ------
+        ValueError
+            if the threshold is less than a selected value of 1e-4
+        """
         if threshold < 1e-4:
-            raise ValueError("Threshold cannot be less than 1e4")
+            raise ValueError("Threshold cannot be less than 1e-4")
         self._initialize()
         self.X_ = X
         self.y_ = y
@@ -229,7 +301,21 @@ class MFS:
         return self
 
     def get_results(self):
+        """Return the results of the algorithm applied if any
+
+        Returns
+        -------
+        list
+            list of features indices selected
+        """
         return self._result
 
     def get_scores(self):
+        """Return the scores computed for the features selected
+
+        Returns
+        -------
+        list
+            list of scores of the features selected
+        """
         return self._scores
