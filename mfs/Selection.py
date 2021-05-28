@@ -178,7 +178,10 @@ class MFS:
         float
             The merit of the feature set passed
         """
-        rcf = self._su_labels[features].sum()
+        # lgtm has already recognized that this is a false positive
+        rcf = self._su_labels[
+            features
+        ].sum()  # lgtm [py/hash-unhashable-value]
         rff = 0.0
         k = len(features)
         for pair in list(combinations(features, 2)):
