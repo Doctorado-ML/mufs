@@ -21,8 +21,8 @@ class MFS_test(unittest.TestCase):
             self.assertAlmostEqual(a, b, tol)
 
     def test_initialize(self):
-        mfs = MFS()
-        mfs.fcbs(self.X_w, self.y_w, 0.05)
+        mfs = MFS(max_features=100)
+        mfs.fcbf(self.X_w, self.y_w, 0.05)
         mfs._initialize()
         self.assertIsNone(mfs.get_results())
         self.assertListEqual([], mfs.get_scores())
@@ -30,7 +30,7 @@ class MFS_test(unittest.TestCase):
         self.assertIsNone(mfs._su_labels)
 
     def test_csf_wine(self):
-        mfs = MFS()
+        mfs = MFS(max_features=100)
         expected = [6, 12, 9, 4, 10, 0]
         self.assertListAlmostEqual(
             expected, mfs.cfs(self.X_w, self.y_w).get_results()
@@ -45,8 +45,21 @@ class MFS_test(unittest.TestCase):
         ]
         self.assertListAlmostEqual(expected, mfs.get_scores())
 
+    def test_csf_max_features(self):
+        mfs = MFS(max_features=3)
+        expected = [6, 12, 9]
+        self.assertListAlmostEqual(
+            expected, mfs.cfs(self.X_w, self.y_w).get_results()
+        )
+        expected = [
+            0.5218299405215557,
+            0.602513857132804,
+            0.4877384978817362,
+        ]
+        self.assertListAlmostEqual(expected, mfs.get_scores())
+
     def test_csf_iris(self):
-        mfs = MFS()
+        mfs = MFS(max_features=100)
         expected = [3, 2, 0, 1]
         computed = mfs.cfs(self.X_i, self.y_i).get_results()
         self.assertListAlmostEqual(expected, computed)
@@ -58,9 +71,9 @@ class MFS_test(unittest.TestCase):
         ]
         self.assertListAlmostEqual(expected, mfs.get_scores())
 
-    def test_fcbs_wine(self):
-        mfs = MFS()
-        computed = mfs.fcbs(self.X_w, self.y_w, threshold=0.05).get_results()
+    def test_fcbf_wine(self):
+        mfs = MFS(max_features=100)
+        computed = mfs.fcbf(self.X_w, self.y_w, threshold=0.05).get_results()
         expected = [6, 9, 12, 0, 11, 4]
         self.assertListAlmostEqual(expected, computed)
         expected = [
@@ -73,30 +86,42 @@ class MFS_test(unittest.TestCase):
         ]
         self.assertListAlmostEqual(expected, mfs.get_scores())
 
-    def test_fcbs_iris(self):
-        mfs = MFS()
-        computed = mfs.fcbs(self.X_i, self.y_i, threshold=0.05).get_results()
+    def test_fcbf_max_features(self):
+        mfs = MFS(max_features=3)
+        computed = mfs.fcbf(self.X_w, self.y_w, threshold=0.05).get_results()
+        expected = [6, 9, 12]
+        self.assertListAlmostEqual(expected, computed)
+        expected = [
+            0.5218299405215557,
+            0.46224298637417455,
+            0.44518278979085646,
+        ]
+        self.assertListAlmostEqual(expected, mfs.get_scores())
+
+    def test_fcbf_iris(self):
+        mfs = MFS(max_features=100)
+        computed = mfs.fcbf(self.X_i, self.y_i, threshold=0.05).get_results()
         expected = [3, 2]
         self.assertListAlmostEqual(expected, computed)
         expected = [0.870521418179061, 0.810724587460511]
         self.assertListAlmostEqual(expected, mfs.get_scores())
 
     def test_compute_su_labels(self):
-        mfs = MFS()
-        mfs.fcbs(self.X_i, self.y_i, threshold=0.05)
+        mfs = MFS(max_features=100)
+        mfs.fcbf(self.X_i, self.y_i, threshold=0.05)
         expected = [0.0, 0.0, 0.810724587460511, 0.870521418179061]
         self.assertListAlmostEqual(expected, mfs._compute_su_labels().tolist())
         mfs._su_labels = [1, 2, 3, 4]
         self.assertListAlmostEqual([1, 2, 3, 4], mfs._compute_su_labels())
 
     def test_invalid_threshold(self):
-        mfs = MFS()
+        mfs = MFS(max_features=100)
         with self.assertRaises(ValueError):
-            mfs.fcbs(self.X_i, self.y_i, threshold=1e-5)
+            mfs.fcbf(self.X_i, self.y_i, threshold=1e-15)
 
-    def test_fcbs_exit_threshold(self):
-        mfs = MFS()
-        computed = mfs.fcbs(self.X_w, self.y_w, threshold=0.4).get_results()
+    def test_fcbf_exit_threshold(self):
+        mfs = MFS(max_features=100)
+        computed = mfs.fcbf(self.X_w, self.y_w, threshold=0.4).get_results()
         expected = [6, 9, 12]
         self.assertListAlmostEqual(expected, computed)
         expected = [
