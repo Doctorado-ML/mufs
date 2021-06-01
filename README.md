@@ -1,4 +1,5 @@
 ![CI](https://github.com/Doctorado-ML/mfs/workflows/CI/badge.svg)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/66ad727eb13e4c7a8816db1e44d994a7)](https://www.codacy.com/gh/Doctorado-ML/mfs/dashboard?utm_source=github.com&utm_medium=referral&utm_content=Doctorado-ML/mfs&utm_campaign=Badge_Grade)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Doctorado-ML/mfs.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Doctorado-ML/mfs/context:python)
 
 # MFS

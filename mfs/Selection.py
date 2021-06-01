@@ -1,102 +1,8 @@
-from math import log, sqrt
+from math import sqrt
 from sys import float_info
 from itertools import combinations
 import numpy as np
-
-
-class Metrics:
-    @staticmethod
-    def conditional_entropy(x, y, base=2):
-        """quantifies the amount of information needed to describe the outcome
-        of Y given that the value of X is known
-        computes H(Y|X)
-
-        Parameters
-        ----------
-        x : np.array
-            values of the variable
-        y : np.array
-            array of labels
-        base : int, optional
-            base of the logarithm, by default 2
-
-        Returns
-        -------
-        float
-            conditional entropy of y given x
-        """
-        xy = np.c_[x, y]
-        return Metrics.entropy(xy, base) - Metrics.entropy(x, base)
-
-    @staticmethod
-    def entropy(y, base=2):
-        """measure of the uncertainty in predicting the value of y
-
-        Parameters
-        ----------
-        y : np.array
-            array of labels
-        base : int, optional
-            base of the logarithm, by default 2
-
-        Returns
-        -------
-        float
-            entropy of y
-        """
-        _, count = np.unique(y, return_counts=True, axis=0)
-        proba = count.astype(float) / len(y)
-        proba = proba[proba > 0.0]
-        return np.sum(proba * np.log(1.0 / proba)) / log(base)
-
-    @staticmethod
-    def information_gain(x, y, base=2):
-        """Measures the reduction in uncertainty about the value of y when the
-        value of X is known (also called mutual information)
-        (https://www.sciencedirect.com/science/article/pii/S0020025519303603)
-
-        Parameters
-        ----------
-        x : np.array
-            values of the variable
-        y : np.array
-            array of labels
-        base : int, optional
-            base of the logarithm, by default 2
-
-        Returns
-        -------
-        float
-            Information gained
-        """
-        return Metrics.entropy(y, base) - Metrics.conditional_entropy(
-            x, y, base
-        )
-
-    @staticmethod
-    def symmetrical_uncertainty(x, y):
-        """Compute symmetrical uncertainty. Normalize* information gain (mutual
-        information) with the entropies of the features in order to compensate
-        the bias due to high cardinality features. *Range [0, 1]
-        (https://www.sciencedirect.com/science/article/pii/S0020025519303603)
-
-        Parameters
-        ----------
-        x : np.array
-            values of the variable
-        y : np.array
-            array of labels
-
-        Returns
-        -------
-        float
-            symmetrical uncertainty
-        """
-        return (
-            2.0
-            * Metrics.information_gain(x, y)
-            / (Metrics.entropy(x) + Metrics.entropy(y))
-        )
+from .Metrics import Metrics
 
 
 class MFS:
@@ -116,18 +22,36 @@ class MFS:
         The maximum number of features to return
     """
 
-    def __init__(self, max_features):
-        self._initialize()
+    def __init__(self, max_features=None, discrete=True):
         self._max_features = max_features
+        self._discrete = discrete
+        self.symmetrical_uncertainty = (
+            Metrics.symmetrical_uncertainty
+            if discrete
+            else Metrics.symmetrical_unc_continuous
+        )
+        self._fitted = False
 
-    def _initialize(self):
+    def _initialize(self, X, y):
         """Initialize the attributes so support multiple calls using same
         object
+
+        Parameters
+        ----------
+        X : np.array
+            array of features
+        y : np.array
+            vector of labels
         """
+        self.X_ = X
+        self.y_ = y
+        if self._max_features is None:
+            self._max_features = X.shape[1]
         self._result = None
         self._scores = []
         self._su_labels = None
         self._su_features = {}
+        self._fitted = True
 
     def _compute_su_labels(self):
         """Compute symmetrical uncertainty between each feature of the dataset
@@ -142,7 +66,7 @@ class MFS:
             num_features = self.X_.shape[1]
             self._su_labels = np.zeros(num_features)
             for col in range(num_features):
-                self._su_labels[col] = Metrics.symmetrical_uncertainty(
+                self._su_labels[col] = self.symmetrical_uncertainty(
                     self.X_[:, col], self.y_
                 )
         return self._su_labels
@@ -166,7 +90,7 @@ class MFS:
         if (feature_a, feature_b) not in self._su_features:
             self._su_features[
                 (feature_a, feature_b)
-            ] = Metrics.symmetrical_uncertainty(
+            ] = self.symmetrical_uncertainty(
                 self.X_[:, feature_a], self.X_[:, feature_b]
             )
         return self._su_features[(feature_a, feature_b)]
@@ -210,9 +134,7 @@ class MFS:
         self
             self
         """
-        self._initialize()
-        self.X_ = X
-        self.y_ = y
+        self._initialize(X, y)
         s_list = self._compute_su_labels()
         # Descending order
         feature_order = (-s_list).argsort().tolist()
@@ -235,32 +157,35 @@ class MFS:
             candidates.append(feature_order[id_selected])
             self._scores.append(merit)
             del feature_order[id_selected]
-            if (
-                len(feature_order) == 0
-                or len(candidates) == self._max_features
-            ):
-                # Force leaving the loop
-                continue_condition = False
-            if len(self._scores) >= 5:
-                """
-                "To prevent the best first search from exploring the entire
-                feature subset search space, a stopping criterion is imposed.
-                The search will terminate if five consecutive fully expanded
-                subsets show no improvement over the current best subset."
-                as stated in Mark A. Hall Thesis
-                """
-                item_ant = -1
-                for item in self._scores[-5:]:
-                    if item_ant == -1:
-                        item_ant = item
-                    if item > item_ant:
-                        break
-                    else:
-                        item_ant = item
-                else:
-                    continue_condition = False
+            continue_condition = self._cfs_continue_condition(
+                feature_order, candidates
+            )
         self._result = candidates
         return self
+
+    def _cfs_continue_condition(self, feature_order, candidates):
+        if len(feature_order) == 0 or len(candidates) == self._max_features:
+            # Force leaving the loop
+            return False
+        if len(self._scores) >= 5:
+            """
+            "To prevent the best first search from exploring the entire
+            feature subset search space, a stopping criterion is imposed.
+            The search will terminate if five consecutive fully expanded
+            subsets show no improvement over the current best subset."
+            as stated in Mark A. Hall Thesis
+            """
+            item_ant = -1
+            for item in self._scores[-5:]:
+                if item_ant == -1:
+                    item_ant = item
+                if item > item_ant:
+                    break
+                else:
+                    item_ant = item
+            else:
+                return False
+        return True
 
     def fcbf(self, X, y, threshold):
         """Fast Correlation-Based Filter
@@ -286,9 +211,7 @@ class MFS:
         """
         if threshold < 1e-7:
             raise ValueError("Threshold cannot be less than 1e-7")
-        self._initialize()
-        self.X_ = X
-        self.y_ = y
+        self._initialize(X, y)
         s_list = self._compute_su_labels()
         feature_order = (-s_list).argsort()
         feature_dup = feature_order.copy().tolist()
@@ -322,7 +245,7 @@ class MFS:
         list
             list of features indices selected
         """
-        return self._result
+        return self._result if self._fitted else []
 
     def get_scores(self):
         """Return the scores computed for the features selected
@@ -332,4 +255,4 @@ class MFS:
         list
             list of scores of the features selected
         """
-        return self._scores
+        return self._scores if self._fitted else []
