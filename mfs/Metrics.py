@@ -2,10 +2,8 @@ from math import log
 import numpy as np
 
 from scipy.special import gamma, psi
-from sklearn.neighbors import BallTree, KDTree, NearestNeighbors
+from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_selection._mutual_info import _compute_mi
-
-# from .entropy_estimators import mi, entropy as c_entropy
 
 
 class Metrics:
@@ -65,6 +63,10 @@ class Metrics:
         and:
         Kraskov A, Stogbauer H, Grassberger P. (2004). Estimating mutual
         information. Phys Rev E 69(6 Pt 2):066138.
+
+        Differential entropy can be negative
+        https://stats.stackexchange.com/questions/73881/
+        when-is-the-differential-entropy-negative
         """
         if x.ndim == 1:
             x = x.reshape(-1, 1)
@@ -131,7 +133,10 @@ class Metrics:
         return (
             2.0
             * Metrics.information_gain_cont(x, y)
-            / (Metrics.differential_entropy(x) + Metrics.entropy(y))
+            / (
+                Metrics.differential_entropy(x, k=len(x) - 1)
+                + Metrics.entropy(y)
+            )
         )
 
     @staticmethod

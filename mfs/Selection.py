@@ -20,6 +20,9 @@ class MFS:
     ----------
     max_features: int
         The maximum number of features to return
+    discrete: boolean
+        If the features are continuous or discrete. It always supose discrete
+        labels.
     """
 
     def __init__(self, max_features=None, discrete=True):

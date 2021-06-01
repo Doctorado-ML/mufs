@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 from sklearn.datasets import load_iris, load_wine
+from ..entropy_estimators import entropy
 from mdlp import MDLP
 from ..Selection import Metrics
 
@@ -25,9 +26,9 @@ class Metrics_test(unittest.TestCase):
             ([1, 1, 5], 2, 0.9182958340544896),
             (self.y_i, 3, 0.999999999),
         ]
-        for dataset, base, entropy in datasets:
+        for dataset, base, entropy_expected in datasets:
             computed = metric.entropy(dataset, base)
-            self.assertAlmostEqual(entropy, computed)
+            self.assertAlmostEqual(entropy_expected, computed)
 
     def test_differential_entropy(self):
         metric = Metrics()
@@ -41,11 +42,13 @@ class Metrics_test(unittest.TestCase):
             (self.X_i_c, 37, 3.06627326925228),
             (self.X_w_c, 37, 63.13827518897429),
         ]
-        for dataset, base, entropy in datasets:
+        for dataset, base, entropy_expected in datasets:
             computed = metric.differential_entropy(
                 np.array(dataset, dtype="float64"), base
             )
-            self.assertAlmostEqual(entropy, computed, msg=str(dataset))
+            self.assertAlmostEqual(
+                entropy_expected, computed, msg=str(dataset)
+            )
         expected = [
             1.6378708764142766,
             2.0291571802275037,
@@ -67,6 +70,29 @@ class Metrics_test(unittest.TestCase):
                 self.X_w_c[:, c], n_samples - 1
             )
             self.assertAlmostEqual(computed, res_expected)
+
+    def test_dif_ent(self):
+        expected = [
+            1.6378708764142766,
+            2.0291571802275037,
+            0.8273865123744271,
+            3.203935772642847,
+            4.859193341386733,
+            1.3707315434976266,
+            1.8794952925706312,
+            -0.2983180654207054,
+            1.4521478934625076,
+            2.834404839362728,
+            0.4894081282811191,
+            1.361210381692561,
+            7.6373991502818175,
+        ]
+        n_samples, n_features = self.X_w_c.shape
+        for c, res_expected in enumerate(expected):
+            computed = entropy(
+                self.X_w_c[:, c].reshape(-1, 1), k=n_samples - 2
+            )
+            print("-*-", computed)
 
     def test_conditional_entropy(self):
         metric = Metrics()
@@ -133,10 +159,10 @@ class Metrics_test(unittest.TestCase):
     def test_symmetrical_uncertainty_continuous(self):
         metric = Metrics()
         results_expected = [
-            -0.08368315199022527,
-            -0.08539330663499867,
-            -0.026524185532893957,
-            -0.016238166071083728,
+            0.3116626663552704,
+            0.22524988105092494,
+            0.24511182026415218,
+            0.07114329389542708,
         ]
         for expected, col in zip(results_expected, range(self.X_w.shape[1])):
             computed = metric.symmetrical_unc_continuous(
