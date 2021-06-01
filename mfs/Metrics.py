@@ -1,9 +1,11 @@
 from math import log
 import numpy as np
 
-from scipy.special import gamma, psi
+from scipy.special import digamma, gamma, psi
+from sklearn.neighbors import BallTree, KDTree
 from sklearn.neighbors import NearestNeighbors
-from sklearn.feature_selection._mutual_info import _compute_mi
+
+# from sklearn.feature_selection._mutual_info import _compute_mi
 
 
 class Metrics:
@@ -19,17 +21,95 @@ class Metrics:
             values of the continuous variable
         y : np.array
             array of labels
-        base : int, optional
-            base of the logarithm, by default 2
 
         Returns
         -------
         float
             Information gained
         """
-        return _compute_mi(
-            x, y, x_discrete=False, y_discrete=True, n_neighbors=3
+        # return _compute_mi(
+        #     x, y, x_discrete=False, y_discrete=True, n_neighbors=3
+        # )
+        return Metrics._compute_mi_cd(x, y, n_neighbors=3)
+
+    def _compute_mi_cd(c, d, n_neighbors):
+        """Compute mutual information between continuous and discrete variables.
+
+        Parameters
+        ----------
+        c : ndarray, shape (n_samples,)
+            Samples of a continuous random variable.
+
+        d : ndarray, shape (n_samples,)
+            Samples of a discrete random variable.
+
+        n_neighbors : int
+            Number of nearest neighbors to search for each point, see [1]_.
+
+        Returns
+        -------
+        mi : float
+            Estimated mutual information. If it turned out to be negative it is
+            replace by 0.
+
+        Notes
+        -----
+        True mutual information can't be negative. If its estimate by a numerical
+        method is negative, it means (providing the method is adequate) that the
+        mutual information is close to 0 and replacing it by 0 is a reasonable
+        strategy.
+
+        References
+        ----------
+        .. [1] B. C. Ross "Mutual Information between Discrete and Continuous
+        Data Sets". PLoS ONE 9(2), 2014.
+        """
+        n_samples = c.shape[0]
+        if c.ndim == 1:
+            c = c.reshape((-1, 1))
+
+        radius = np.empty(n_samples)
+        label_counts = np.empty(n_samples)
+        k_all = np.empty(n_samples)
+        nn = NearestNeighbors()
+        for label in np.unique(d):
+            mask = d == label
+            count = np.sum(mask)
+            if count > 1:
+                k = min(n_neighbors, count - 1)
+                nn.set_params(n_neighbors=k)
+                nn.fit(c[mask])
+                r = nn.kneighbors()[0]
+                radius[mask] = np.nextafter(r[:, -1], 0)
+                k_all[mask] = k
+            label_counts[mask] = count
+
+        # Ignore points with unique labels.
+        mask = label_counts > 1
+        n_samples = np.sum(mask)
+        label_counts = label_counts[mask]
+        k_all = k_all[mask]
+        c = c[mask]
+        radius = radius[mask]
+
+        # kd = KDTree(c)
+        kd = (
+            BallTree(c, metric="chebyshev")
+            if n_samples >= 20
+            else KDTree(c, metric="chebyshev")
         )
+        m_all = kd.query_radius(
+            c, radius, count_only=True, return_distance=False
+        )
+        m_all = np.array(m_all) - 1.0
+
+        mi = (
+            digamma(n_samples)
+            + np.mean(digamma(k_all))
+            - np.mean(digamma(label_counts))
+            - np.mean(digamma(m_all + 1))
+        )
+        return max(0, mi)
 
     @staticmethod
     def _nearest_distances(X, k=1):
