@@ -63,7 +63,7 @@ class Metrics_test(unittest.TestCase):
             1.361210381692561,
             7.6373991502818175,
         ]
-        n_samples, n_features = self.X_w_c.shape
+        n_samples = self.X_w_c.shape[0]
         for c, res_expected in enumerate(expected):
             computed = metric.differential_entropy(
                 self.X_w_c[:, c], n_samples - 1
