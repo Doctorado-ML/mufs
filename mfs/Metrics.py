@@ -5,8 +5,6 @@ from scipy.special import digamma, gamma, psi
 from sklearn.neighbors import BallTree, KDTree
 from sklearn.neighbors import NearestNeighbors
 
-# from sklearn.feature_selection._mutual_info import _compute_mi
-
 
 class Metrics:
     @staticmethod
@@ -27,13 +25,16 @@ class Metrics:
         float
             Information gained
         """
-        # return _compute_mi(
-        #     x, y, x_discrete=False, y_discrete=True, n_neighbors=3
-        # )
         return Metrics._compute_mi_cd(x, y, n_neighbors=3)
 
+    @staticmethod
     def _compute_mi_cd(c, d, n_neighbors):
-        """Compute mutual information between continuous and discrete variables.
+        """Compute mutual information between continuous and discrete
+        variable.
+
+        # Author: Nikolay Mayorov <n59_ru@hotmail.com>
+        # License: 3-clause BSD
+
 
         Parameters
         ----------
@@ -54,10 +55,10 @@ class Metrics:
 
         Notes
         -----
-        True mutual information can't be negative. If its estimate by a numerical
-        method is negative, it means (providing the method is adequate) that the
-        mutual information is close to 0 and replacing it by 0 is a reasonable
-        strategy.
+        True mutual information can't be negative. If its estimate by a
+        numerical method is negative, it means (providing the method is
+        adequate) that the mutual information is close to 0 and replacing it
+        by 0 is a reasonable strategy.
 
         References
         ----------
@@ -67,7 +68,6 @@ class Metrics:
         n_samples = c.shape[0]
         if c.ndim == 1:
             c = c.reshape((-1, 1))
-
         radius = np.empty(n_samples)
         label_counts = np.empty(n_samples)
         k_all = np.empty(n_samples)
@@ -83,7 +83,6 @@ class Metrics:
                 radius[mask] = np.nextafter(r[:, -1], 0)
                 k_all[mask] = k
             label_counts[mask] = count
-
         # Ignore points with unique labels.
         mask = label_counts > 1
         n_samples = np.sum(mask)
@@ -91,8 +90,6 @@ class Metrics:
         k_all = k_all[mask]
         c = c[mask]
         radius = radius[mask]
-
-        # kd = KDTree(c)
         kd = (
             BallTree(c, metric="chebyshev")
             if n_samples >= 20
@@ -102,7 +99,6 @@ class Metrics:
             c, radius, count_only=True, return_distance=False
         )
         m_all = np.array(m_all) - 1.0
-
         mi = (
             digamma(n_samples)
             + np.mean(digamma(k_all))
@@ -126,7 +122,6 @@ class Metrics:
 
     @staticmethod
     def differential_entropy(x, k=1):
-
         """Returns the entropy of the X.
         Parameters
         ===========
@@ -165,31 +160,6 @@ class Metrics:
             + np.log(volume_unit_ball)
             + psi(n)
             - psi(k)
-        )
-
-    @staticmethod
-    def conditional_differential_entropy(x, y):
-        """quantifies the amount of information needed to describe the outcome
-        of Y discrete given that the value of X continuous is known
-        computes H(Y|X)
-
-        Parameters
-        ----------
-        x : np.array
-            values of the continuous variable
-        y : np.array
-            array of labels
-        base : int, optional
-            base of the logarithm, by default 2
-
-        Returns
-        -------
-        float
-            conditional entropy of y given x
-        """
-        xy = np.c_[x, y]
-        return Metrics.differential_entropy(xy) - Metrics.differential_entropy(
-            x
         )
 
     @staticmethod

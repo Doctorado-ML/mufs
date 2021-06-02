@@ -47,20 +47,19 @@ class MFS_test(unittest.TestCase):
 
     def test_csf_wine_cont(self):
         mfs = MFS(discrete=False)
-        expected = [6, 11, 9, 0, 12, 5]
-        # self.assertListAlmostEqual(
-        #     expected, mfs.cfs(self.X_wc, self.y_w).get_results()
-        # )
+        expected = [10, 6, 0, 2, 9, 7]
+        self.assertListEqual(
+            expected, mfs.cfs(self.X_wc, self.y_w).get_results()
+        )
         expected = [
-            0.5218299405215557,
-            0.602513857132804,
-            0.4877384978817362,
-            0.3743688234383051,
-            0.28795671854246285,
-            0.2309165735173175,
+            0.735264150416997,
+            0.8279580852902876,
+            0.7828768186880067,
+            0.7279815238718462,
+            0.6287944059925545,
+            0.5416637958201808,
         ]
-        # self.assertListAlmostEqual(expected, mfs.get_scores())
-        print(expected, mfs.get_scores())
+        self.assertListAlmostEqual(expected, mfs.get_scores())
 
     def test_csf_max_features(self):
         mfs = MFS(max_features=3)

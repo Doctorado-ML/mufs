@@ -1,7 +1,6 @@
 import unittest
 import numpy as np
 from sklearn.datasets import load_iris, load_wine
-from ..entropy_estimators import entropy
 from mdlp import MDLP
 from ..Selection import Metrics
 
@@ -71,29 +70,6 @@ class Metrics_test(unittest.TestCase):
             )
             self.assertAlmostEqual(computed, res_expected)
 
-    def test_dif_ent(self):
-        expected = [
-            1.6378708764142766,
-            2.0291571802275037,
-            0.8273865123744271,
-            3.203935772642847,
-            4.859193341386733,
-            1.3707315434976266,
-            1.8794952925706312,
-            -0.2983180654207054,
-            1.4521478934625076,
-            2.834404839362728,
-            0.4894081282811191,
-            1.361210381692561,
-            7.6373991502818175,
-        ]
-        n_samples, n_features = self.X_w_c.shape
-        for c, res_expected in enumerate(expected):
-            computed = entropy(
-                self.X_w_c[:, c].reshape(-1, 1), k=n_samples - 2
-            )
-            print("-*-", computed)
-
     def test_conditional_entropy(self):
         metric = Metrics()
         results_expected = [
@@ -142,6 +118,34 @@ class Metrics_test(unittest.TestCase):
             computed = metric.information_gain(self.X_i[:, col], self.y_i, 2)
             self.assertAlmostEqual(expected, computed)
 
+    def test_information_gain_continuous(self):
+        metric = Metrics()
+        # Wine
+        results_expected = [
+            0.4993916064992192,
+            0.4049969724847222,
+            0.2934244372102506,
+            0.16970372100970632,
+        ]
+        for expected, col in zip(results_expected, range(self.X_w_c.shape[1])):
+            computed = metric.information_gain_cont(
+                self.X_w_c[:, col], self.y_w
+            )
+            self.assertAlmostEqual(expected, computed)
+        # Iris
+        results_expected = [
+            0.32752672968734586,
+            0.0,
+            0.5281084030413838,
+            0.0,
+        ]
+        for expected, col in zip(results_expected, range(self.X_i_c.shape[1])):
+            computed = metric.information_gain_cont(
+                self.X_i_c[:, col].reshape(-1, 1),  # reshape for coverage
+                self.y_i,
+            )
+            self.assertAlmostEqual(expected, computed)
+
     def test_symmetrical_uncertainty(self):
         metric = Metrics()
         results_expected = [
@@ -168,5 +172,4 @@ class Metrics_test(unittest.TestCase):
             computed = metric.symmetrical_unc_continuous(
                 self.X_w_c[:, col], self.y_w
             )
-            # print(computed)
             self.assertAlmostEqual(expected, computed)
