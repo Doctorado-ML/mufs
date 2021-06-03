@@ -157,6 +157,9 @@ class MFS:
                     id_selected = idx
                     merit = merit_new
                 candidates.pop()
+            if id_selected is None:
+                # Every merit computed is 0
+                break
             candidates.append(feature_order[id_selected])
             self._scores.append(merit)
             del feature_order[id_selected]
