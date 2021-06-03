@@ -21,13 +21,15 @@ mfsd = MFS(discrete=True)
 # X = data[:, -1:]
 # y = data[:, -1]
 
-
-data, meta = arff.loadarff(
-    "/Users/rmontanana/Code/stree_datasets/data/tanveer/balance-scale/balance-scale.arff"
+filename = (
+    "/Users/rmontanana/Code/stree_datasets/data/tanveer/conn-bench-sonar-min"
+    "es-rocks/conn-bench-sonar-mines-rocks.arff"
 )
-train = np.array([data["f1"], data["f2"], data["f3"], data["f4"]])
-y = data["clase"]
+data, meta = arff.loadarff(filename)
+train = np.array([data[i] for i in meta])
 X = train.T
+X = X[:, :-1].astype("float64")
+y = data["clase"]
 
 
 for c in range(X.shape[1]):
@@ -68,10 +70,10 @@ clf = Stree(random_state=0)
 subf = fcfb_f
 print("fcfb", clf.fit(X[:, subf], y).score(X[:, subf], y))
 
-for c in range(X.shape[1]):
-    for k in range(X.shape[1]):
-        ac = 0
-        for v in range(X[:, c].shape[0]):
-            if X[v, c] == X[v, k]:
-                ac += 1
-        print(f"{c} {k} {ac}")
+# for c in range(X.shape[1]):
+#     for k in range(X.shape[1]):
+#         ac = 0
+#         for v in range(X[:, c].shape[0]):
+#             if X[v, c] == X[v, k]:
+#                 ac += 1
+#         print(f"{c} {k} {ac}")

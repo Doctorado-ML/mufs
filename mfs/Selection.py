@@ -33,6 +33,11 @@ class MFS:
             if discrete
             else Metrics.symmetrical_unc_continuous
         )
+        self.symmetrical_uncertainty_features = (
+            Metrics.symmetrical_uncertainty
+            if discrete
+            else Metrics.symmetrical_unc_continuous_features
+        )
         self._fitted = False
 
     def _initialize(self, X, y):
@@ -93,7 +98,7 @@ class MFS:
         if (feature_a, feature_b) not in self._su_features:
             self._su_features[
                 (feature_a, feature_b)
-            ] = self.symmetrical_uncertainty(
+            ] = self.symmetrical_uncertainty_features(
                 self.X_[:, feature_a], self.X_[:, feature_b]
             )
         return self._su_features[(feature_a, feature_b)]
@@ -148,7 +153,7 @@ class MFS:
         candidates.append(first_candidate)
         self._scores.append(s_list[first_candidate])
         while continue_condition:
-            merit = float_info.min
+            merit = -float_info.min
             id_selected = None
             for idx, feature in enumerate(feature_order):
                 candidates.append(feature)
@@ -157,9 +162,6 @@ class MFS:
                     id_selected = idx
                     merit = merit_new
                 candidates.pop()
-            if id_selected is None:
-                # Every merit computed is 0
-                break
             candidates.append(feature_order[id_selected])
             self._scores.append(merit)
             del feature_order[id_selected]
