@@ -51,6 +51,9 @@ class Metrics:
     def _compute_mi_cc(x, y, n_neighbors):
         """Compute mutual information between two continuous variables.
 
+        # Author: Nikolay Mayorov <n59_ru@hotmail.com>
+        # License: 3-clause BSD
+
         Parameters
         ----------
         x, y : ndarray, shape (n_samples,)
@@ -68,10 +71,10 @@ class Metrics:
 
         Notes
         -----
-        True mutual information can't be negative. If its estimate by a numerical
-        method is negative, it means (providing the method is adequate) that the
-        mutual information is close to 0 and replacing it by 0 is a reasonable
-        strategy.
+        True mutual information can't be negative. If its estimate by a
+        numerical method is negative, it means (providing the method is
+        adequate) that the mutual information is close to 0 and replacing it by
+        0 is a reasonable strategy.
 
         References
         ----------
