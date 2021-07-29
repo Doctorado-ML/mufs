@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 from sklearn.datasets import load_iris, load_wine
+from sklearn.utils import check_random_state
 from mdlp import MDLP
 from ..Selection import Metrics
 
@@ -173,3 +174,72 @@ class Metrics_test(unittest.TestCase):
                 self.X_w_c[:, col], self.y_w
             )
             self.assertAlmostEqual(expected, computed)
+
+    def test_compute_mi_cd_wine(self):
+        metric = Metrics()
+        mi = metric._compute_mi_cd(self.X_w_c, self.y_w, 5)
+        self.assertAlmostEqual(mi, 0.27887866726386035)
+
+    def test_compute_mi_cd_no_mi(self):
+        metric = Metrics()
+        synth_y = list(range(0, self.y_w.shape[0]))
+        mi = metric._compute_mi_cd(self.X_w_c, synth_y, 1)
+        self.assertAlmostEqual(mi, 0.0)
+
+    def test_compute_mi_cd(self):
+        # code taken from sklearn.feature_selection.tests.test_mutual_info
+        # To test define a joint distribution as follows:
+        # p(x, y) = p(x) p(y | x)
+        # X ~ Bernoulli(p)
+        # (Y | x = 0) ~ Uniform(-1, 1)
+        # (Y | x = 1) ~ Uniform(0, 2)
+
+        # Use the following formula for mutual information:
+        # I(X; Y) = H(Y) - H(Y | X)
+        # Two entropies can be computed by hand:
+        # H(Y) = -(1-p)/2 * ln((1-p)/2) - p/2*log(p/2) - 1/2*log(1/2)
+        # H(Y | X) = ln(2)
+
+        # Now we need to implement sampling from out distribution, which is
+        # done easily using conditional distribution logic.
+
+        metric = Metrics()
+        n_samples = 1000
+        rng = check_random_state(0)
+
+        for p in [0.3, 0.5, 0.7]:
+            x = rng.uniform(size=n_samples) > p
+
+            y = np.empty(n_samples)
+            mask = x == 0
+            y[mask] = rng.uniform(-1, 1, size=np.sum(mask))
+            y[~mask] = rng.uniform(0, 2, size=np.sum(~mask))
+            I_theory = -0.5 * (
+                (1 - p) * np.log(0.5 * (1 - p))
+                + p * np.log(0.5 * p)
+                + np.log(0.5)
+            ) - np.log(2)
+
+            # Assert the same tolerance.
+            for n_neighbors in [3, 5, 7]:
+                I_computed = metric._compute_mi_cd(y, x, n_neighbors)
+                self.assertAlmostEqual(I_computed, I_theory, 1)
+
+    def test_compute_mi_cd_unique_label(self):
+        # code taken from sklearn.feature_selection.tests.test_mutual_info
+        # Test that adding unique label doesn't change MI.
+        metric = Metrics()
+        n_samples = 100
+        x = np.random.uniform(size=n_samples) > 0.5
+
+        y = np.empty(n_samples)
+        mask = x == 0
+        y[mask] = np.random.uniform(-1, 1, size=np.sum(mask))
+        y[~mask] = np.random.uniform(0, 2, size=np.sum(~mask))
+
+        mi_1 = metric._compute_mi_cd(y, x, 3)
+
+        x = np.hstack((x, 2))
+        y = np.hstack((y, 10))
+        mi_2 = metric._compute_mi_cd(y, x, 3)
+        self.assertAlmostEqual(mi_1, mi_2, 1)

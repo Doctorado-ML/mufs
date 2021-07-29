@@ -177,6 +177,8 @@ class Metrics:
         k_all = k_all[mask]
         c = c[mask]
         radius = radius[mask]
+        if n_samples == 0:
+            return 0.0
         kd = (
             BallTree(c, metric="chebyshev")
             if n_samples >= 20
@@ -192,7 +194,7 @@ class Metrics:
             - np.mean(digamma(label_counts))
             - np.mean(digamma(m_all + 1))
         )
-        return max(0, mi)
+        return max(0.0, mi)
 
     @staticmethod
     def _nearest_distances(X, k=1):
