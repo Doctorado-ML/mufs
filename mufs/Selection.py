@@ -5,7 +5,7 @@ import numpy as np
 from .Metrics import Metrics
 
 
-class MFS:
+class MUFS:
     """Compute Fast Fast Correlation Based Filter
     Yu, L. and Liu, H.; Feature Selection for High-Dimensional Data: A Fast
     Correlation Based Filter Solution,Proc. 20th Intl. Conf. Mach. Learn.

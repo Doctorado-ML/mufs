@@ -1,11 +1,11 @@
 import warnings
-from mfs import MFS
-from mfs.Metrics import Metrics
+from mufs import MUFS
+from mufs.Metrics import Metrics
 from stree import Stree
 import numpy as np
 from scipy.io import arff
 
-mfsc = MFS(discrete=False)
+mufsc = MUFS(discrete=False)
 
 filename = "conn-bench-sonar-mines-rocks.arff"
 data, meta = arff.loadarff(filename)
@@ -26,10 +26,10 @@ for i in range(n):
 # Classification
 warnings.filterwarnings("ignore")
 print("CFS")
-cfs_f = mfsc.cfs(X, y).get_results()
+cfs_f = mufsc.cfs(X, y).get_results()
 print(cfs_f)
 print("FCBF")
-fcfb_f = mfsc.fcbf(X, y, 5e-2).get_results()
+fcfb_f = mufsc.fcbf(X, y, 5e-2).get_results()
 print(fcfb_f, len(fcfb_f))
 print("X.shape=", X.shape)
 clf = Stree(random_state=0)

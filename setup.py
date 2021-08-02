@@ -8,7 +8,7 @@ def readme():
 
 def get_data(field: str):
     item = ""
-    with open("mfs/__init__.py") as f:
+    with open("mufs/__init__.py") as f:
         for line in f.readlines():
             if line.startswith(f"__{field}__"):
                 delim = '"' if '"' in line else "'"
@@ -20,16 +20,16 @@ def get_data(field: str):
 
 
 setuptools.setup(
-    name="MFS",
+    name="MUFS",
     version=get_data("version"),
     license=get_data("license"),
     description="Multi Feature Selection",
     long_description=readme(),
     long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
-    url="https://github.com/Doctorado-ML/mfs#mfs",
+    url="https://github.com/Doctorado-ML/mufs#mufs",
     project_urls={
-        "Code": "https://github.com/Doctorado-ML/mfs",
+        "Code": "https://github.com/Doctorado-ML/mufs",
     },
     author=get_data("author"),
     author_email=get_data("author_email"),
@@ -43,6 +43,6 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
     ],
     install_requires=["scikit-learn"],
-    test_suite="mfs.tests",
+    test_suite="mufs.tests",
     zip_safe=False,
 )

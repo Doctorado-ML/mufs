@@ -30,9 +30,9 @@ jobs:
           pip install -q --upgrade codecov coverage black flake8 codacy-coverage
       - name: Lint
         run: |
-          black --check --diff mfs
-          flake8 --count mfs
+          black --check --diff mufs
+          flake8 --count mufs
       - name: Tests & coverage
         run: |
-          coverage run -m unittest -v mfs.tests
+          coverage run -m unittest -v mufs.tests
           coverage report -m --fail-under=100

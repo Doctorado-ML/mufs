@@ -2,10 +2,10 @@ import unittest
 from mdlp import MDLP
 from sklearn.datasets import load_wine, load_iris
 
-from ..Selection import MFS
+from ..Selection import MUFS
 
 
-class MFS_test(unittest.TestCase):
+class MUFS_test(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         mdlp = MDLP(random_state=1)
@@ -21,19 +21,19 @@ class MFS_test(unittest.TestCase):
             self.assertAlmostEqual(a, b, tol)
 
     def test_initialize(self):
-        mfs = MFS()
-        mfs.fcbf(self.X_w, self.y_w, 0.05)
-        mfs._initialize(self.X_w, self.y_w)
-        self.assertIsNone(mfs.get_results())
-        self.assertListEqual([], mfs.get_scores())
-        self.assertDictEqual({}, mfs._su_features)
-        self.assertIsNone(mfs._su_labels)
+        mufs = MUFS()
+        mufs.fcbf(self.X_w, self.y_w, 0.05)
+        mufs._initialize(self.X_w, self.y_w)
+        self.assertIsNone(mufs.get_results())
+        self.assertListEqual([], mufs.get_scores())
+        self.assertDictEqual({}, mufs._su_features)
+        self.assertIsNone(mufs._su_labels)
 
     def test_csf_wine(self):
-        mfs = MFS()
+        mufs = MUFS()
         expected = [6, 12, 9, 4, 10, 0]
         self.assertListAlmostEqual(
-            expected, mfs.cfs(self.X_w, self.y_w).get_results()
+            expected, mufs.cfs(self.X_w, self.y_w).get_results()
         )
         expected = [
             0.5218299405215557,
@@ -43,13 +43,13 @@ class MFS_test(unittest.TestCase):
             0.28795671854246285,
             0.2309165735173175,
         ]
-        self.assertListAlmostEqual(expected, mfs.get_scores())
+        self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_csf_wine_cont(self):
-        mfs = MFS(discrete=False)
+        mufs = MUFS(discrete=False)
         expected = [10, 6, 0, 2, 11, 9]
         self.assertListEqual(
-            expected, mfs.cfs(self.X_wc, self.y_w).get_results()
+            expected, mufs.cfs(self.X_wc, self.y_w).get_results()
         )
         expected = [
             0.735264150416997,
@@ -59,25 +59,25 @@ class MFS_test(unittest.TestCase):
             0.513637402071709,
             0.41596400981378984,
         ]
-        self.assertListAlmostEqual(expected, mfs.get_scores())
+        self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_csf_max_features(self):
-        mfs = MFS(max_features=3)
+        mufs = MUFS(max_features=3)
         expected = [6, 12, 9]
         self.assertListAlmostEqual(
-            expected, mfs.cfs(self.X_w, self.y_w).get_results()
+            expected, mufs.cfs(self.X_w, self.y_w).get_results()
         )
         expected = [
             0.5218299405215557,
             0.602513857132804,
             0.4877384978817362,
         ]
-        self.assertListAlmostEqual(expected, mfs.get_scores())
+        self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_csf_iris(self):
-        mfs = MFS()
+        mufs = MUFS()
         expected = [3, 2, 0, 1]
-        computed = mfs.cfs(self.X_i, self.y_i).get_results()
+        computed = mufs.cfs(self.X_i, self.y_i).get_results()
         self.assertListAlmostEqual(expected, computed)
         expected = [
             0.870521418179061,
@@ -85,11 +85,11 @@ class MFS_test(unittest.TestCase):
             0.5908278453318913,
             0.40371971570693366,
         ]
-        self.assertListAlmostEqual(expected, mfs.get_scores())
+        self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_fcbf_wine(self):
-        mfs = MFS()
-        computed = mfs.fcbf(self.X_w, self.y_w, threshold=0.05).get_results()
+        mufs = MUFS()
+        computed = mufs.fcbf(self.X_w, self.y_w, threshold=0.05).get_results()
         expected = [6, 9, 12, 0, 11, 4]
         self.assertListAlmostEqual(expected, computed)
         expected = [
@@ -100,11 +100,11 @@ class MFS_test(unittest.TestCase):
             0.3790082191220976,
             0.24972405134844652,
         ]
-        self.assertListAlmostEqual(expected, mfs.get_scores())
+        self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_fcbf_max_features(self):
-        mfs = MFS(max_features=3)
-        computed = mfs.fcbf(self.X_w, self.y_w, threshold=0.05).get_results()
+        mufs = MUFS(max_features=3)
+        computed = mufs.fcbf(self.X_w, self.y_w, threshold=0.05).get_results()
         expected = [6, 9, 12]
         self.assertListAlmostEqual(expected, computed)
         expected = [
@@ -112,32 +112,34 @@ class MFS_test(unittest.TestCase):
             0.46224298637417455,
             0.44518278979085646,
         ]
-        self.assertListAlmostEqual(expected, mfs.get_scores())
+        self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_fcbf_iris(self):
-        mfs = MFS()
-        computed = mfs.fcbf(self.X_i, self.y_i, threshold=0.05).get_results()
+        mufs = MUFS()
+        computed = mufs.fcbf(self.X_i, self.y_i, threshold=0.05).get_results()
         expected = [3, 2]
         self.assertListAlmostEqual(expected, computed)
         expected = [0.870521418179061, 0.810724587460511]
-        self.assertListAlmostEqual(expected, mfs.get_scores())
+        self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_compute_su_labels(self):
-        mfs = MFS()
-        mfs.fcbf(self.X_i, self.y_i, threshold=0.05)
+        mufs = MUFS()
+        mufs.fcbf(self.X_i, self.y_i, threshold=0.05)
         expected = [0.0, 0.0, 0.810724587460511, 0.870521418179061]
-        self.assertListAlmostEqual(expected, mfs._compute_su_labels().tolist())
-        mfs._su_labels = [1, 2, 3, 4]
-        self.assertListAlmostEqual([1, 2, 3, 4], mfs._compute_su_labels())
+        self.assertListAlmostEqual(
+            expected, mufs._compute_su_labels().tolist()
+        )
+        mufs._su_labels = [1, 2, 3, 4]
+        self.assertListAlmostEqual([1, 2, 3, 4], mufs._compute_su_labels())
 
     def test_invalid_threshold(self):
-        mfs = MFS()
+        mufs = MUFS()
         with self.assertRaises(ValueError):
-            mfs.fcbf(self.X_i, self.y_i, threshold=1e-15)
+            mufs.fcbf(self.X_i, self.y_i, threshold=1e-15)
 
     def test_fcbf_exit_threshold(self):
-        mfs = MFS()
-        computed = mfs.fcbf(self.X_w, self.y_w, threshold=0.4).get_results()
+        mufs = MUFS()
+        computed = mufs.fcbf(self.X_w, self.y_w, threshold=0.4).get_results()
         expected = [6, 9, 12]
         self.assertListAlmostEqual(expected, computed)
         expected = [
@@ -145,4 +147,4 @@ class MFS_test(unittest.TestCase):
             0.46224298637417455,
             0.44518278979085646,
         ]
-        self.assertListAlmostEqual(expected, mfs.get_scores())
+        self.assertListAlmostEqual(expected, mufs.get_scores())

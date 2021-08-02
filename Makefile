@@ -4,28 +4,26 @@ SHELL := /bin/bash
 
 coverage:  ## Run tests with coverage
 	coverage erase
-	coverage run -m unittest -v mfs.tests
+	coverage run -m unittest -v mufs.tests
 	coverage report -m
 
 deps:  ## Install dependencies
 	pip install -r requirements.txt
 
 lint:  ## Lint and static-check
-	black mfs
-	flake8 mfs
-	mypy mfs
+	black mufs
+	flake8 mufs
+	mypy mufs
 
 push:  ## Push code with tags
 	git push && git push --tags
 
 test:  ## Run tests
-	python -m unittest -v mfs.tests
-
-doc:  ## Update documentation
-	make -C docs --makefile=Makefile html
+	python -m unittest -v mufs.tests
 
 build:  ## Build package
 	rm -fr dist/*
+	rm -fr build/*
 	python setup.py sdist bdist_wheel
 
 doc-clean:  ## Update documentation
