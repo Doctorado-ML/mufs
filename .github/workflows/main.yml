@@ -25,6 +25,7 @@ jobs:
         run: |
           pip install -q --upgrade pip
           pip install -q cython
+          pip install -q numpy
           pip install -q git+git://github.com/doctorado-ml/mdlp
           pip install -q -r requirements.txt
           pip install -q --upgrade codecov coverage black flake8 codacy-coverage
