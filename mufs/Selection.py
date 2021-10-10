@@ -26,7 +26,7 @@ class MUFS:
     """
 
     def __init__(self, max_features=None, discrete=True):
-        self._max_features = max_features
+        self.max_features = max_features
         self._discrete = discrete
         self.symmetrical_uncertainty = (
             Metrics.symmetrical_uncertainty
@@ -53,8 +53,10 @@ class MUFS:
         """
         self.X_ = X
         self.y_ = y
-        if self._max_features is None:
+        if self.max_features is None:
             self._max_features = X.shape[1]
+        else:
+            self._max_features = self.max_features
         self._result = None
         self._scores = []
         self._su_labels = None
@@ -105,7 +107,9 @@ class MUFS:
 
     def _compute_merit(self, features):
         """Compute the merit function for cfs algorithms
-
+           "Good feature subsets contain features highly correlated with
+           (predictive of) the class, yet uncorrelated with (not predictive of)
+           each other"
         Parameters
         ----------
         features : list
@@ -264,3 +268,57 @@ class MUFS:
             list of scores of the features selected
         """
         return self._scores if self._fitted else []
+
+    def iwss(self, X, y, threshold):
+        """Incremental Wrapper Subset Selection
+
+        Parameters
+        ----------
+        X : np.array
+            array of features
+        y : np.array
+            vector of labels
+        threshold : float
+            threshold to select relevant features
+
+        Returns
+        -------
+        self
+            self
+        Raises
+        ------
+        ValueError
+            if the threshold is less than a selected value of 1e-7
+            or greater than .5
+
+        """
+        if threshold < 0 or threshold > 0.5:
+            raise ValueError(
+                "Threshold cannot be less than 0 or greater than 0.5"
+            )
+        self._initialize(X, y)
+        s_list = self._compute_su_labels()
+        feature_order = (-s_list).argsort()
+        features = feature_order.copy().tolist()
+        candidates = []
+        # Add first and second features to result
+        first_feature = features.pop(0)
+        candidates.append(first_feature)
+        self._scores.append(s_list[first_feature])
+        candidates.append(features.pop(0))
+        merit = self._compute_merit(candidates)
+        self._scores.append(merit)
+        for feature in features:
+            candidates.append(feature)
+            merit_new = self._compute_merit(candidates)
+            delta = abs(merit - merit_new) / merit if merit != 0.0 else 0.0
+            if merit_new > merit or delta < threshold:
+                if merit_new > merit:
+                    merit = merit_new
+                self._scores.append(merit_new)
+            else:
+                candidates.pop()
+            if len(candidates) == self._max_features:
+                break
+        self._result = candidates
+        return self
