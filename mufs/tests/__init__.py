@@ -1,4 +1,4 @@
-from .MUFS_test import MUFS_test
-from .Metrics_test import Metrics_test
+from .MUFS_test import MUFSTest
+from .Metrics_test import MetricsTest
 
-__all__ = ["MUFS_test", "Metrics_test"]
+__all__ = ["MUFSTest", "MetricsTest"]

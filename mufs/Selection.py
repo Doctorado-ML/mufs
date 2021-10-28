@@ -318,6 +318,7 @@ class MUFS:
                 self._scores.append(merit_new)
             else:
                 candidates.pop()
+                break
             if len(candidates) == self._max_features:
                 break
         self._result = candidates

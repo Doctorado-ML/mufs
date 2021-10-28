@@ -1,11 +1,14 @@
 import unittest
+import os
+import pandas as pd
+import numpy as np
 from mdlp import MDLP
 from sklearn.datasets import load_wine, load_iris
 
 from ..Selection import MUFS
 
 
-class MUFS_test(unittest.TestCase):
+class MUFSTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         mdlp = MDLP(random_state=1)
@@ -175,9 +178,6 @@ class MUFS_test(unittest.TestCase):
             mufs.iwss(self.X_w, self.y_w, -0.01)
 
     def test_iwss_better_merit_condition(self):
-        import pandas as pd
-        import os
-
         folder = os.path.dirname(os.path.abspath(__file__))
         data = pd.read_csv(
             os.path.join(folder, "balloons_R.dat"),
@@ -189,3 +189,8 @@ class MUFS_test(unittest.TestCase):
         mufs = MUFS()
         expected = [0, 2, 3, 1]
         self.assertListEqual(expected, mufs.iwss(X, y, 0.3).get_results())
+
+    def test_iwss_empty(self):
+        mufs = MUFS()
+        X = np.delete(self.X_i, [0, 1], 1)
+        self.assertListEqual(mufs.iwss(X, self.y_i, 0.3).get_results(), [1, 0])
