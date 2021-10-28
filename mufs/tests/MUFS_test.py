@@ -1,11 +1,14 @@
 import unittest
+import os
+import pandas as pd
+import numpy as np
 from mdlp import MDLP
 from sklearn.datasets import load_wine, load_iris
 
 from ..Selection import MUFS
 
 
-class MUFS_test(unittest.TestCase):
+class MUFSTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         mdlp = MDLP(random_state=1)
@@ -32,7 +35,7 @@ class MUFS_test(unittest.TestCase):
     def test_csf_wine(self):
         mufs = MUFS()
         expected = [6, 12, 9, 4, 10, 0]
-        self.assertListAlmostEqual(
+        self.assertListEqual(
             expected, mufs.cfs(self.X_w, self.y_w).get_results()
         )
         expected = [
@@ -78,7 +81,7 @@ class MUFS_test(unittest.TestCase):
         mufs = MUFS()
         expected = [3, 2, 0, 1]
         computed = mufs.cfs(self.X_i, self.y_i).get_results()
-        self.assertListAlmostEqual(expected, computed)
+        self.assertListEqual(expected, computed)
         expected = [
             0.870521418179061,
             0.8968651482682227,
@@ -148,3 +151,46 @@ class MUFS_test(unittest.TestCase):
             0.44518278979085646,
         ]
         self.assertListAlmostEqual(expected, mufs.get_scores())
+
+    def test_iwss_wine(self):
+        mufs = MUFS()
+        expected = [6, 9, 12]
+        self.assertListEqual(
+            expected, mufs.iwss(self.X_w, self.y_w, 0.2).get_results()
+        )
+        expected = [0.5218299405215557, 0.5947822876110085, 0.4877384978817362]
+        self.assertListAlmostEqual(expected, mufs.get_scores())
+
+    def test_iwss_wine_max_features(self):
+        mufs = MUFS(max_features=3)
+        expected = [6, 9, 12]
+        self.assertListEqual(
+            expected, mufs.iwss(self.X_w, self.y_w, 0.4).get_results()
+        )
+        expected = [0.5218299405215557, 0.5947822876110085, 0.4877384978817362]
+        self.assertListAlmostEqual(expected, mufs.get_scores())
+
+    def test_iwss_exception(self):
+        mufs = MUFS()
+        with self.assertRaises(ValueError):
+            mufs.iwss(self.X_w, self.y_w, 0.51)
+        with self.assertRaises(ValueError):
+            mufs.iwss(self.X_w, self.y_w, -0.01)
+
+    def test_iwss_better_merit_condition(self):
+        folder = os.path.dirname(os.path.abspath(__file__))
+        data = pd.read_csv(
+            os.path.join(folder, "balloons_R.dat"),
+            sep="\t",
+            index_col=0,
+        )
+        X = data.drop("clase", axis=1).to_numpy()
+        y = data["clase"].to_numpy()
+        mufs = MUFS()
+        expected = [0, 2, 3, 1]
+        self.assertListEqual(expected, mufs.iwss(X, y, 0.3).get_results())
+
+    def test_iwss_empty(self):
+        mufs = MUFS()
+        X = np.delete(self.X_i, [0, 1], 1)
+        self.assertListEqual(mufs.iwss(X, self.y_i, 0.3).get_results(), [1, 0])

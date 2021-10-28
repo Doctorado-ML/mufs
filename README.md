@@ -17,3 +17,7 @@ Proceedings, Twentieth International Conference on Machine Learning. ed. / T. Fa
 ### Correlation-based Feature Selection
 
 Hall, M. A. (1999), 'Correlation-based Feature Selection for Machine Learning'.
+
+### IWSS
+
+Based on: P. Bermejo, J. A. Gamez and J. M. Puerta, "Incremental Wrapper-based subset Selection with replacement: An advantageous alternative to sequential forward selection," 2009 IEEE Symposium on Computational Intelligence and Data Mining, 2009, pp. 367-374, doi: 10.1109/CIDM.2009.4938673.

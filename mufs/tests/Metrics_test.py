@@ -6,7 +6,7 @@ from mdlp import MDLP
 from ..Selection import Metrics
 
 
-class Metrics_test(unittest.TestCase):
+class MetricsTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         mdlp = MDLP(random_state=1)
