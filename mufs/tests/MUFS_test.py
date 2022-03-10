@@ -34,33 +34,38 @@ class MUFSTest(unittest.TestCase):
 
     def test_csf_wine(self):
         mufs = MUFS()
-        expected = [6, 12, 9, 4, 10, 0]
+        expected = [6, 12, 9, 4, 10, 0, 7, 8]
         self.assertListEqual(
             expected, mufs.cfs(self.X_w, self.y_w).get_results()
         )
         expected = [
             0.5218299405215557,
-            0.602513857132804,
-            0.4877384978817362,
-            0.3743688234383051,
-            0.28795671854246285,
-            0.2309165735173175,
+            1.205027714265608,
+            1.4632154936452084,
+            1.4974752937532203,
+            1.4397835927123144,
+            1.385499441103905,
+            1.340618857006277,
+            1.2989177695790775,
         ]
         self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_csf_wine_cont(self):
         mufs = MUFS(discrete=False)
-        expected = [10, 6, 0, 2, 11, 9]
+        expected = [10, 6, 0, 2, 11, 9, 8, 1, 5]
         self.assertListEqual(
             expected, mufs.cfs(self.X_wc, self.y_w).get_results()
         )
         expected = [
             0.735264150416997,
-            0.8321684551546848,
-            0.7439915858469107,
-            0.6238883340158233,
-            0.513637402071709,
-            0.41596400981378984,
+            1.6643369103093697,
+            2.231974757540732,
+            2.4955533360632933,
+            2.568187010358545,
+            2.495784058882739,
+            2.4409992149141915,
+            2.3665143407182456,
+            2.280111788845658,
         ]
         self.assertListAlmostEqual(expected, mufs.get_scores())
 
@@ -70,11 +75,7 @@ class MUFSTest(unittest.TestCase):
         self.assertListAlmostEqual(
             expected, mufs.cfs(self.X_w, self.y_w).get_results()
         )
-        expected = [
-            0.5218299405215557,
-            0.602513857132804,
-            0.4877384978817362,
-        ]
+        expected = [0.5218299405215557, 1.205027714265608, 1.4632154936452084]
         self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_csf_iris(self):
@@ -84,9 +85,9 @@ class MUFSTest(unittest.TestCase):
         self.assertListEqual(expected, computed)
         expected = [
             0.870521418179061,
-            0.8968651482682227,
-            0.5908278453318913,
-            0.40371971570693366,
+            1.7937302965364454,
+            1.7724835359956739,
+            1.6148788628277346,
         ]
         self.assertListAlmostEqual(expected, mufs.get_scores())
 
@@ -154,11 +155,19 @@ class MUFSTest(unittest.TestCase):
 
     def test_iwss_wine(self):
         mufs = MUFS()
-        expected = [6, 9, 12]
+        expected = [6, 9, 12, 0, 11, 10, 5]
         self.assertListEqual(
             expected, mufs.iwss(self.X_w, self.y_w, 0.2).get_results()
         )
-        expected = [0.5218299405215557, 0.5947822876110085, 0.4877384978817362]
+        expected = [
+            0.5218299405215557,
+            1.189564575222017,
+            1.4632154936452084,
+            1.428626297656075,
+            1.3384248731269246,
+            1.2869213430115078,
+            1.1949414936926785,
+        ]
         self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_iwss_wine_max_features(self):
@@ -167,7 +176,7 @@ class MUFSTest(unittest.TestCase):
         self.assertListEqual(
             expected, mufs.iwss(self.X_w, self.y_w, 0.4).get_results()
         )
-        expected = [0.5218299405215557, 0.5947822876110085, 0.4877384978817362]
+        expected = [0.5218299405215557, 1.189564575222017, 1.4632154936452084]
         self.assertListAlmostEqual(expected, mufs.get_scores())
 
     def test_iwss_exception(self):
