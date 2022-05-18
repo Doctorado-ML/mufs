@@ -3,6 +3,7 @@ from sys import float_info
 from itertools import combinations
 import numpy as np
 from .Metrics import Metrics
+from ._version import __version__
 
 
 class MUFS:
@@ -39,6 +40,11 @@ class MUFS:
             else Metrics.symmetrical_unc_continuous_features
         )
         self._fitted = False
+
+    @staticmethod
+    def version() -> str:
+        """Return the version of the package."""
+        return __version__
 
     def _initialize(self, X, y):
         """Initialize the attributes so support multiple calls using same
@@ -128,7 +134,7 @@ class MUFS:
         k = len(features)
         for pair in list(combinations(features, 2)):
             rff += self._compute_su_features(*pair)
-        return rcf / sqrt(k + (k ** 2 - k) * rff)
+        return rcf / sqrt(k + (k**2 - k) * rff)
 
     def cfs(self, X, y):
         """Correlation-based Feature Selection
