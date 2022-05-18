@@ -1,3 +1,4 @@
+import os
 import setuptools
 
 
@@ -6,9 +7,10 @@ def readme():
         return f.read()
 
 
-def get_data(field: str):
+def get_data(field):
     item = ""
-    with open("mufs/__init__.py") as f:
+    file_name = "_version.py" if field == "version" else "__init__.py"
+    with open(os.path.join("mufs", file_name)) as f:
         for line in f.readlines():
             if line.startswith(f"__{field}__"):
                 delim = '"' if '"' in line else "'"
