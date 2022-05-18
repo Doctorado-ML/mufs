@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 from mdlp import MDLP
 from sklearn.datasets import load_wine, load_iris
-
 from ..Selection import MUFS
+from .._version import __version__
 
 
 class MUFSTest(unittest.TestCase):
@@ -17,6 +17,11 @@ class MUFSTest(unittest.TestCase):
         self.X_ic, self.y_i = load_iris(return_X_y=True)
         mdlp = MDLP(random_state=1)
         self.X_i = mdlp.fit_transform(self.X_ic, self.y_i).astype("int64")
+
+    def test_version(self):
+        """Check package version."""
+        mufs = MUFS()
+        self.assertEqual(__version__, mufs.version())
 
     def assertListAlmostEqual(self, list1, list2, tol=7):
         self.assertEqual(len(list1), len(list2))
