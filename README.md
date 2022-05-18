@@ -3,6 +3,8 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Doctorado-ML/mufs.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Doctorado-ML/mufs/context:python)
 [![PyPI version](https://badge.fury.io/py/MUFS.svg)](https://badge.fury.io/py/MUFS)
 ![https://img.shields.io/badge/python-3.8%2B-blue](https://img.shields.io/badge/python-3.8%2B-brightgreen)
+[![Security Rating](https://haystack.rmontanana.es:25000/api/project_badges/measure?project=mufs&metric=security_rating&token=1119a3bfd4025d50ef3009a44c600c16670ee31a)](http://haystack.local:25000/dashboard?id=mufs)
+[![Technical Debt](https://haystack.rmontanana.es:25000/api/project_badges/measure?project=mufs&metric=sqale_index&token=1119a3bfd4025d50ef3009a44c600c16670ee31a)](http://haystack.local:25000/dashboard?id=mufs)
 
 # MUFS
 
