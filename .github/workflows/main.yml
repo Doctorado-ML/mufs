@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
-        python: [3.8]
+        python: [3.8, "3.10"]
 
     steps:
       - uses: actions/checkout@v2
@@ -28,12 +28,33 @@ jobs:
           pip install -q numpy
           pip install -q git+https://github.com/doctorado-ml/mdlp
           pip install -q -r requirements/dev.txt
-          pip install -q --upgrade codecov coverage black flake8 codacy-coverage
+          pip install -q --upgrade codecov coverage black flake8 codacy-coverage unittest-xml-reporting
       - name: Lint
         run: |
           black --check --diff mufs
           flake8 --count mufs
       - name: Tests & coverage
         run: |
-          coverage run -m unittest -v mufs.tests
+          mkdir .report
+          coverage run -m xmlrunner -v mufs.tests -o .report
+          coverage xml -i -o .report/coverage.xml
           coverage report -m --fail-under=100
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: echo "project_version=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectVersion=${{ env.project_version }}
+            -Dsonar.python.coverage.reportPaths=.report/coverage.xml
+            -Dsonar.python.xunit.reportPath=.report/TEST*
+        # If you wish to fail your job when the Quality Gate is red, uncomment the
+        # following lines. This would typically be used to fail a deployment.
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
