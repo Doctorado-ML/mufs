@@ -12,8 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
-        python: [3.8, "3.10"]
+        os: [ubuntu-latest]
+        python: ["3.10"]
 
     steps:
       - uses: actions/checkout@v2
@@ -39,9 +39,6 @@ jobs:
           coverage run -m xmlrunner -v mufs.tests -o .report
           coverage xml -i -o .report/coverage.xml
           coverage report -m --fail-under=100
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - run: echo "project_version=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
       - uses: sonarsource/sonarqube-scan-action@master
         env:
