@@ -43,13 +43,14 @@ jobs:
           coverage report -m --fail-under=100
       - name: Get project version
         run: echo "project_version=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+      - name: Override Coverage Source Path for Sonar
+        run: sed -i "s/<source>\/home\/runner\/work\/repo<\/source>/<source>\/github\/workspace<\/source>/g" .report/coverage.xml
       - name: SonarQube scanner
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
-          projectBaseDir: mufs
           args: >
             -Dsonar.projectVersion=${{ env.project_version }}
             -Dsonar.python.coverage.reportPaths=.report/coverage.xml
