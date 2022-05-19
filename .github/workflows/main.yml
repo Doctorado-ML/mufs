@@ -39,8 +39,10 @@ jobs:
           coverage run -m xmlrunner -v mufs.tests -o .report
           coverage xml -i -o .report/coverage.xml
           coverage report -m --fail-under=100
-      - run: echo "project_version=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-      - uses: sonarsource/sonarqube-scan-action@master
+      - name: Get project version
+        run: echo "project_version=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+      - name: SonarQube scanner
+        uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -49,9 +51,11 @@ jobs:
             -Dsonar.projectVersion=${{ env.project_version }}
             -Dsonar.python.coverage.reportPaths=.report/coverage.xml
             -Dsonar.python.xunit.reportPath=.report/TEST*
+            -Dsonar.sources=.
         # If you wish to fail your job when the Quality Gate is red, uncomment the
         # following lines. This would typically be used to fail a deployment.
-      - uses: sonarsource/sonarqube-quality-gate-action@master
+      - name: Quality Gate
+        uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
