@@ -43,8 +43,10 @@ jobs:
           coverage report -m --fail-under=100
       - name: Get project version
         run: echo "project_version=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+      - name: grep source en coverage
+        run: grep source .report/coverage.xml
       - name: Override Coverage Source Path for Sonar
-        run: sed -i "s/<source>\/home\/runner\/work\/repo<\/source>/<source>\/github\/workspace<\/source>/g" .report/coverage.xml
+        run: sed -i "s/<source>\/home\/runner\/work\/mufs\/mufs\/mufs<\/source>/<source>\/github\/workspace<\/source>/g" .report/coverage.xml
       - name: SonarQube scanner
         uses: sonarsource/sonarqube-scan-action@master
         env:
