@@ -38,6 +38,8 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: " + get_data("license"),
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Natural Language :: English",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Intended Audience :: Science/Research",
