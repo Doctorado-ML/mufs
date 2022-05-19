@@ -21,6 +21,11 @@ def get_data(field):
     return item
 
 
+def get_requirements():
+    with open("requirements/production.txt") as f:
+        return f.read().splitlines()
+
+
 setuptools.setup(
     name="MUFS",
     version=get_data("version"),
@@ -46,7 +51,7 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "Intended Audience :: Science/Research",
     ],
-    install_requires=["scikit-learn"],
+    install_requires=get_requirements(),
     test_suite="mufs.tests",
     zip_safe=False,
 )
