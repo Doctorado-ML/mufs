@@ -49,11 +49,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
+          projectBaseDir: mufs
           args: >
             -Dsonar.projectVersion=${{ env.project_version }}
             -Dsonar.python.coverage.reportPaths=.report/coverage.xml
             -Dsonar.python.xunit.reportPath=.report/TEST*
-            -Dsonar.sources=.
         # If you wish to fail your job when the Quality Gate is red, uncomment the
         # following lines. This would typically be used to fail a deployment.
       - name: Quality Gate
