@@ -43,24 +43,14 @@ jobs:
           coverage report -m --fail-under=100
       - name: Get project version
         run: echo "project_version=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-      - name: grep source en coverage
-        run: grep source .report/coverage.xml
       - name: Override Coverage Source Path for Sonar
         run: sed -i 's/\/home\/runner\/work\/mufs\/mufs\//\/github\/workspace\//g' .report/coverage.xml
-        #run: sed -i "s/<source>\/home\/runner\/work\/mufs\/mufs\/mufs<\/source>/<source>\/github\/workspace\/mufs\/mufs\/mufs<\/source>/g" .report/coverage.xml
-      - name: grep source en coverage again
-        run: grep source .report/coverage.xml
-      - name: PWD
-        run: pwd
-      - name: busca Metrics.py
-        run: find . -name Metrics.py
       - name: SonarQube scanner
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
-          workdir: /home/runner/work/mufs/mufs
           args: >
             -Dsonar.projectVersion=${{ env.project_version }}
             -Dsonar.python.coverage.reportPaths=.report/coverage.xml
@@ -70,7 +60,5 @@ jobs:
       - name: Quality Gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
-        with:
-          workdir: /home/runner/work/mufs/mufs
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
