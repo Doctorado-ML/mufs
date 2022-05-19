@@ -1,12 +1,12 @@
 repos:
   - repo: https://github.com/ambv/black
-    rev: 20.8b1
+    rev: 22.3.0
     hooks:
       - id: black
         exclude: ".virtual_documents"
         language_version: python3.8
   - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.4
+    rev: 3.9.2
     hooks:
       - id: flake8
         exclude: ".virtual_documents"
@@ -16,7 +16,7 @@ repos:
   #     - id: mypy
   #       # args: [--strict, --ignore-missing-imports]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+    rev: v4.2.0
     hooks:
       - id: trailing-whitespace
       - id: check-case-conflict
