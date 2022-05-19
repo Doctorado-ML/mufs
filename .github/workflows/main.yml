@@ -46,9 +46,13 @@ jobs:
       - name: grep source en coverage
         run: grep source .report/coverage.xml
       - name: Override Coverage Source Path for Sonar
-        run: sed -i "s/<source>\/home\/runner\/work\/mufs\/mufs\/mufs<\/source>/<source>\/github\/workspace\/mufs\/mufs\/mufs<\/source>/g" .report/coverage.xml
+        run: sed -i "s/<source>\/home\/runner\/work\/mufs\/mufs\/mufs<\/source>/<source>\/github\/workspace\/mufs\/mufs<\/source>/g" .report/coverage.xml
       - name: grep source en coverage again
         run: grep source .report/coverage.xml
+      - name: PWD
+        run: pwd
+      - name: busca Metrics.py
+        run: find . -name Metrics.py
       - name: SonarQube scanner
         uses: sonarsource/sonarqube-scan-action@master
         env:
@@ -59,6 +63,10 @@ jobs:
             -Dsonar.projectVersion=${{ env.project_version }}
             -Dsonar.python.coverage.reportPaths=.report/coverage.xml
             -Dsonar.python.xunit.reportPath=.report/TEST*
+      - name: PWD2
+        run: pwd
+      - name: busca Metrics.py 2
+        run: find . -name Metrics.py
         # If you wish to fail your job when the Quality Gate is red, uncomment the
         # following lines. This would typically be used to fail a deployment.
       - name: Quality Gate
