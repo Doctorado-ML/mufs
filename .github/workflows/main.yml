@@ -46,7 +46,8 @@ jobs:
       - name: grep source en coverage
         run: grep source .report/coverage.xml
       - name: Override Coverage Source Path for Sonar
-        run: sed -i "s/<source>\/home\/runner\/work\/mufs\/mufs\/mufs<\/source>/<source>\/github\/workspace\/mufs\/mufs<\/source>/g" .report/coverage.xml
+        # run: sed -i "s/<source>\/home\/runner\/work\/mufs\/mufs\/mufs<\/source>/<source>\/github\/workspace\/mufs\/mufs<\/source>/g" .report/coverage.xml
+        run: ls -l
       - name: grep source en coverage again
         run: grep source .report/coverage.xml
       - name: PWD
@@ -63,6 +64,7 @@ jobs:
             -Dsonar.projectVersion=${{ env.project_version }}
             -Dsonar.python.coverage.reportPaths=.report/coverage.xml
             -Dsonar.python.xunit.reportPath=.report/TEST*
+            -Dsonar.working.directory=/home/runner/work/mufs/mufs
       - name: PWD2
         run: pwd
       - name: busca Metrics.py 2
