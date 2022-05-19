@@ -46,8 +46,7 @@ jobs:
       - name: grep source en coverage
         run: grep source .report/coverage.xml
       - name: Override Coverage Source Path for Sonar
-        # run: sed -i "s/<source>\/home\/runner\/work\/mufs\/mufs\/mufs<\/source>/<source>\/github\/workspace\/mufs\/mufs<\/source>/g" .report/coverage.xml
-        run: ls -l
+        run: sed -i "s/<source>\/home\/runner\/work\/mufs\/mufs\/mufs<\/source>/<source>\/github\/workspace\/mufs\/mufs\/mufs<\/source>/g" .report/coverage.xml
       - name: grep source en coverage again
         run: grep source .report/coverage.xml
       - name: PWD
@@ -60,19 +59,17 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
+          workdir: /home/runner/work/mufs/mufs
           args: >
             -Dsonar.projectVersion=${{ env.project_version }}
             -Dsonar.python.coverage.reportPaths=.report/coverage.xml
             -Dsonar.python.xunit.reportPath=.report/TEST*
-            -Dsonar.working.directory=/home/runner/work/mufs/mufs
-      - name: PWD2
-        run: pwd
-      - name: busca Metrics.py 2
-        run: find . -name Metrics.py
         # If you wish to fail your job when the Quality Gate is red, uncomment the
         # following lines. This would typically be used to fail a deployment.
       - name: Quality Gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5
+        with:
+          workdir: /home/runner/work/mufs/mufs
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
