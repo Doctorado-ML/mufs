@@ -172,6 +172,10 @@ class MUFS:
                     id_selected = idx
                     merit = merit_new
                 candidates.pop()
+            if id_selected is None:
+                # No more features to add all merits are nan because of
+                # constant features
+                break
             candidates.append(feature_order[id_selected])
             self._scores.append(merit)
             del feature_order[id_selected]
