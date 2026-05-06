@@ -1,3 +1,53 @@
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "MUFS"
+description = "Multi Feature Selection"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Ricardo Montañana Gómez", email = "Ricardo.Montanana@alu.uclm.es" },
+]
+keywords = ["feature-selection"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Intended Audience :: Science/Research",
+]
+dependencies = ["scikit-learn>=1.8.0"]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/Doctorado-ML/mufs#mufs"
+Code = "https://github.com/Doctorado-ML/mufs"
+
+[project.optional-dependencies]
+dev = [
+    "mdlp",
+    "pandas",
+    "black",
+    "flake8",
+    "mypy",
+    "coverage",
+    "unittest-xml-reporting",
+    "build",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "mufs._version.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["mufs*"]
+
 [tool.black]
 line-length = 79
 include = '\.pyi?$'

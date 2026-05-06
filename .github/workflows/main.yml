@@ -16,21 +16,19 @@ jobs:
         python: ["3.10"]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
       - name: Install dependencies
         run: |
-          pip install -q --upgrade pip
-          pip install -q cython
-          pip install -q numpy
-          pip install -q git+https://github.com/doctorado-ml/mdlp
-          pip install -q -r requirements/dev.txt
-          pip install -q --upgrade codecov coverage black flake8 codacy-coverage unittest-xml-reporting
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
       - name: Lint
         run: |
           black --check --diff mufs
@@ -55,8 +53,6 @@ jobs:
             -Dsonar.projectVersion=${{ env.project_version }}
             -Dsonar.python.coverage.reportPaths=.report/coverage.xml
             -Dsonar.python.xunit.reportPath=.report/TEST*
-        # If you wish to fail your job when the Quality Gate is red, uncomment the
-        # following lines. This would typically be used to fail a deployment.
       - name: Quality Gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         timeout-minutes: 5

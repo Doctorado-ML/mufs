@@ -8,7 +8,7 @@ coverage:  ## Run tests with coverage
 	coverage report -m
 
 deps:  ## Install dependencies
-	pip install -r requirements.txt
+	pip install -e ".[dev]"
 
 lint:  ## Lint and static-check
 	black mufs
@@ -24,7 +24,7 @@ test:  ## Run tests
 build:  ## Build package
 	rm -fr dist/*
 	rm -fr build/*
-	python setup.py sdist bdist_wheel
+	python -m build
 
 help: ## Show help message
 	@IFS=$$'\n' ; \
