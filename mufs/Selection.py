@@ -134,7 +134,7 @@ class MUFS:
         k = len(features)
         for pair in list(combinations(features, 2)):
             rff += self._compute_su_features(*pair)
-        return rcf / sqrt(k + (k**2 - k) * rff)
+        return rcf / sqrt(k + 2 * rff)
 
     def cfs(self, X, y):
         """Correlation-based Feature Selection

@@ -14,7 +14,7 @@ authors = [
 ]
 keywords = ["feature-selection"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -32,7 +32,6 @@ Code = "https://github.com/Doctorado-ML/mufs"
 
 [project.optional-dependencies]
 dev = [
-    "mdlp",
     "pandas",
     "black",
     "flake8",

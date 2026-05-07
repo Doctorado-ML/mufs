@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from sklearn.datasets import load_iris, load_wine
 from sklearn.utils import check_random_state
-from mdlp import MDLP
+from fimdlp import FImdlp as MDLP
 from ..Selection import Metrics
 
 

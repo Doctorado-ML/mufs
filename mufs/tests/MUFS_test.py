@@ -2,7 +2,7 @@ import unittest
 import os
 import pandas as pd
 import numpy as np
-from mdlp import MDLP
+from fimdlp import FImdlp as MDLP
 from sklearn.datasets import load_wine, load_iris
 from ..Selection import MUFS
 from .._version import __version__

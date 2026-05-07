@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import sys; print\\(sys.version\\)\")",
+      "Bash(pip show *)",
+      "Bash(python3 -m pip show build)",
+      "Bash(python3 -m pip show setuptools)",
+      "Bash(python3 -m pip install --quiet --user build)",
+      "Bash(python3 -m build --wheel --outdir /tmp/mufs-test-build)",
+      "Bash(python3 -m zipfile -e /tmp/mufs-test-build/mufs-0.1.3-py3-none-any.whl /tmp/mufs-wheel-extract/)",
+      "Read(//tmp/mufs-wheel-extract/mufs-0.1.3.dist-info/**)",
+      "Bash(python3 -m build --wheel --outdir /tmp/mufs-test-build2)",
+      "Bash(python3 -m zipfile -e /tmp/mufs-test-build2/mufs-0.1.3-py3-none-any.whl /tmp/mufs-wheel-extract2/)",
+      "Read(//tmp/mufs-wheel-extract2/mufs-0.1.3.dist-info/**)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(python3 -m pip install --quiet --user mdlp pandas)",
+      "Bash(python3 -m pip install --quiet --user cython numpy)",
+      "Bash(python3 -m pip install --user mdlp pandas)",
+      "Bash(python3 -m venv /tmp/mufs-venv)",
+      "Bash(/tmp/mufs-venv/bin/pip install *)"
+    ]
+  }
+}
