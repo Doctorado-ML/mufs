@@ -25,7 +25,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Intended Audience :: Science/Research",
 ]
-dependencies = ["scikit-learn>=1.8.0"]
+dependencies = ["scikit-learn>=1.8.0", "FImdlp>=1.0.1"]
 dynamic = ["version"]
 
 [project.urls]
