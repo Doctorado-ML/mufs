@@ -47,20 +47,9 @@ jobs:
       - name: Override Coverage Source Path for Sonar
         if: matrix.os == 'ubuntu-latest' && matrix.python == '3.11'
         run: sed -i 's/\/home\/runner\/work\/mufs\/mufs\//\/github\/workspace\//g' .report/coverage.xml
-      - name: SonarQube scanner
+      - name: Upload coverage to Codacy
         if: matrix.os == 'ubuntu-latest' && matrix.python == '3.11'
-        uses: sonarsource/sonarqube-scan-action@v4
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        uses: codacy/codacy-coverage-reporter-action@v1
         with:
-          args: >
-            -Dsonar.projectVersion=${{ env.project_version }}
-            -Dsonar.python.coverage.reportPaths=.report/coverage.xml
-            -Dsonar.python.xunit.reportPath=.report/TEST*
-      - name: Quality Gate
-        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.11'
-        uses: sonarsource/sonarqube-quality-gate-action@v1
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: .report/coverage.xml
