@@ -18,7 +18,8 @@
       "Bash(python3 -m pip install --quiet --user cython numpy)",
       "Bash(python3 -m pip install --user mdlp pandas)",
       "Bash(python3 -m venv /tmp/mufs-venv)",
-      "Bash(/tmp/mufs-venv/bin/pip install *)"
+      "Bash(/tmp/mufs-venv/bin/pip install *)",
+      "Bash(make coverage *)"
     ]
   }
 }

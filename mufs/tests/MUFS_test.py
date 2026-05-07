@@ -231,3 +231,33 @@ class MUFSTest(unittest.TestCase):
         mufs = MUFS()
         X = np.delete(self.X_i, [0, 1], 1)
         self.assertListEqual(mufs.iwss(X, self.y_i, 0.3).get_results(), [1, 0])
+
+    def test_iwss_break_on_decreasing_merit(self):
+        # threshold=0 forces the loop to exit the first time adding a feature
+        # decreases the merit (covers the early-break path of iwss).
+        mufs = MUFS()
+        expected = [6, 11, 9, 12, 0]
+        self.assertListEqual(
+            expected, mufs.iwss(self.X_w, self.y_w, 0).get_results()
+        )
+        expected_scores = [
+            0.5917174272084998,
+            0.63815174863856,
+            0.7218306836003792,
+            0.7717412016033023,
+            0.8038053387462911,
+        ]
+        self.assertListAlmostEqual(expected_scores, mufs.get_scores())
+
+    def test_cfs_break_on_constant_features(self):
+        # Two constant features (with different values) make their pairwise
+        # symmetrical uncertainty NaN, so every candidate added on top of the
+        # current subset yields a NaN merit and cfs must break out.
+        n = 60
+        X = np.zeros((n, 3), dtype=int)
+        X[:, 0] = np.arange(n) % 3
+        X[:, 1] = 1
+        X[:, 2] = 2
+        y = X[:, 0].copy()
+        mufs = MUFS()
+        self.assertListEqual([0, 1], mufs.cfs(X, y).get_results())
