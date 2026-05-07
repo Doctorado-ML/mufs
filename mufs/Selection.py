@@ -104,10 +104,10 @@ class MUFS:
             The symmetrical uncertainty of the two features
         """
         if (feature_a, feature_b) not in self._su_features:
-            self._su_features[
-                (feature_a, feature_b)
-            ] = self.symmetrical_uncertainty_features(
-                self.X_[:, feature_a], self.X_[:, feature_b]
+            self._su_features[(feature_a, feature_b)] = (
+                self.symmetrical_uncertainty_features(
+                    self.X_[:, feature_a], self.X_[:, feature_b]
+                )
             )
         return self._su_features[(feature_a, feature_b)]
 

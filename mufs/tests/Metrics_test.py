@@ -2,14 +2,14 @@ import unittest
 import numpy as np
 from sklearn.datasets import load_iris, load_wine
 from sklearn.utils import check_random_state
-from fimdlp import FImdlp as MDLP
+from fimdlp.mdlp import FImdlp
 from ..Selection import Metrics
 
 
 class MetricsTest(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        mdlp = MDLP(random_state=1)
+        mdlp = FImdlp()
         self.X_i_c, self.y_i = load_iris(return_X_y=True)
         self.X_i = mdlp.fit_transform(self.X_i_c, self.y_i).astype("int64")
         self.X_w_c, self.y_w = load_wine(return_X_y=True)
@@ -74,10 +74,9 @@ class MetricsTest(unittest.TestCase):
     def test_conditional_entropy(self):
         metric = Metrics()
         results_expected = [
-            0.490953458537736,
-            0.7110077966379169,
-            0.15663362014829718,
-            0.13032469395094992,
+            0.5804993141543934,
+            0.737168541907204,
+            0.11033772526320562,
         ]
         for expected, col in zip(results_expected, range(self.X_i.shape[1])):
             computed = metric.conditional_entropy(
@@ -99,20 +98,20 @@ class MetricsTest(unittest.TestCase):
     def test_information_gain(self):
         metric = Metrics()
         results_expected = [
-            0.5090465414622638,
-            0.28899220336208287,
-            0.8433663798517026,
+            0.4195006858456064,
+            0.26283145809279573,
+            0.8896622747367942,
             0.8696753060490499,
         ]
         for expected, col in zip(results_expected, range(self.X_i.shape[1])):
             computed = metric.information_gain(self.X_i[:, col], self.y_i, 3)
             self.assertAlmostEqual(expected, computed)
-        # https://planetcalc.com/8419/
-        # ?_d=FrDfFN2COAhqh9Pb5ycqy5CeKgIOxlfSjKgyyIR.Q5L0np-g-hw6yv8M1Q8_
+        # https://planetcalc.com/8421/
+        # ?_d=gm3Fm2f.fWb2uoy1b.oz63uPl8KygnCnnhuPqPiDwKsig1UDG48gxVBtcqA_
         results_expected = [
-            0.806819679,
-            0.458041805,
-            1.336704086,
+            0.664892856,
+            0.416578005,
+            1.410081344,
             1.378402748,
         ]
         for expected, col in zip(results_expected, range(self.X_i.shape[1])):
@@ -150,9 +149,9 @@ class MetricsTest(unittest.TestCase):
     def test_symmetrical_uncertainty(self):
         metric = Metrics()
         results_expected = [
-            0.33296547388990266,
-            0.19068147573570668,
-            0.810724587460511,
+            0.4424133711155806,
+            0.20591684128081936,
+            0.8164005165126134,
             0.870521418179061,
         ]
         for expected, col in zip(results_expected, range(self.X_i.shape[1])):
