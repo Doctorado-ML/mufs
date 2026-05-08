@@ -4,6 +4,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/66ad727eb13e4c7a8816db1e44d994a7)](https://app.codacy.com/gh/Doctorado-ML/mufs/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 [![PyPI version](https://badge.fury.io/py/MUFS.svg)](https://badge.fury.io/py/MUFS)
 ![https://img.shields.io/badge/python-3.11%2B-blue](https://img.shields.io/badge/python-3.11%2B-brightgreen)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Doctorado-ML/mufs)
 
 # MUFS
 
