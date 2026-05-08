@@ -41,15 +41,20 @@ jobs:
           coverage run -m xmlrunner -v mufs.tests -o .report
           coverage xml -i -o .report/coverage.xml
           coverage report -m --fail-under=100
+      - name: Upload coverage to Codacy
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.11'
+        continue-on-error: true
+        env:
+          CODACY_API_TOKEN: ${{ secrets.CODACY_API_TOKEN }}
+          CODACY_ORGANIZATION_PROVIDER: gh
+          CODACY_USERNAME: Doctorado-ML
+          CODACY_PROJECT_NAME: mufs
+        run: |
+          bash <(curl -Ls https://coverage.codacy.com/get.sh) \
+            report -r .report/coverage.xml
       - name: Get project version
         if: matrix.os == 'ubuntu-latest' && matrix.python == '3.11'
         run: echo "project_version=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
       - name: Override Coverage Source Path for Sonar
         if: matrix.os == 'ubuntu-latest' && matrix.python == '3.11'
         run: sed -i 's/\/home\/runner\/work\/mufs\/mufs\//\/github\/workspace\//g' .report/coverage.xml
-      - name: Upload coverage to Codacy
-        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.11'
-        uses: codacy/codacy-coverage-reporter-action@v1
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: .report/coverage.xml
